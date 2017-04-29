@@ -26,3 +26,6 @@ export const DONE_LABEL = 'Done';
 export const SUCCESSFUL = 'Successful';
 export const VALIDATE_REQUIRED_NAME = 'Name is required';
 export const VALIDATE_REQUIRED_PROJECT = 'Project is required';
+export const UPDATE = 'Update';
+export const CLOSE = 'Close';
+export const NODATA = 'No Data';

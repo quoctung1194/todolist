@@ -6,7 +6,7 @@ export default styles = {
     flexDirection: 'column',
   },
   comming_region: {
-    flex: 5,
+    flex: 2,
     borderBottomWidth: 2,
     flexDirection: 'row',
   },
@@ -23,10 +23,10 @@ export default styles = {
     flexDirection: 'row'
   },
   current_region: {
-    flex: 2,
+    flex: 3,
   },
   done_region: {
-    flex: 1.5,
+    flex: 2,
     borderTopWidth: 2,
   },
   add_button: {
@@ -36,7 +36,7 @@ export default styles = {
     marginRight: 5
   },
   load_more_button: {
-    fontSize: 40,
+    fontSize: 35,
   },
   done_region_center: {
     flex: 1,

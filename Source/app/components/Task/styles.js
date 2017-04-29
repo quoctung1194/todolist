@@ -5,12 +5,12 @@ import {
 
 export const NORMAL_SIZE = {
   width: 0.2 * Dimensions.get('window').width,
-  height: (0.2 * Dimensions.get('window').width) / 2,
+  height: (0.21 * Dimensions.get('window').width) / 2,
 };
 
 export const BIG_SIZE = {
   width: NORMAL_SIZE.width * 1.5,
-  height: NORMAL_SIZE.height * 1.5,
+  height: NORMAL_SIZE.height * 1.7,
 };
 
 export default styles = StyleSheet.create({

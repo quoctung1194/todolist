@@ -25,13 +25,13 @@ import {
 	StatusBar
 } from 'react-native';
 import SpeechAndroid from 'react-native-android-voice';
-import common_styles from '../Index/styles';
+import common_styles from '../../containers/Index/styles';
 import styles from './styles';
 import * as actions from './actions';
 import * as stringConst from '../../constants/string';
 import SQLite from 'react-native-sqlite-storage';
 
-export default class Add extends Component
+export default class EditForm extends Component
 {
 	constructor(props)
   {
@@ -39,12 +39,13 @@ export default class Add extends Component
 
 		//Init current date
 		let currentdate = new Date();
-	  let datetime = ('0' + (currentdate.getDate())).slice(-2) + "-"
+	    let datetime = ('0' + (currentdate.getDate())).slice(-2) + "-"
 						+ ('0' + (currentdate.getMonth() + 1)).slice(-2) + "-"
 						+ (currentdate.getFullYear())
 
 		 //Set default form
  		this._default_form = {
+            id: '',
  			name: '',
  			project: '',
  			priority: stringConst.PRIORITY_LOW,
@@ -62,37 +63,18 @@ export default class Add extends Component
 
 	render()
 	{
+        if (this.state.form.id == '') {
+          return (
+            <Container>
+            </Container>
+          );
+        }
+
 		return (
 			<Container>
-				{this._render_header()}
-				{this._render_content()}
+                {this._render_content()}
 			</Container>
 		)
-	}
-
-	_render_header()
-	{
-		return (
-			<Header style={common_styles.primary_color}>
-				<StatusBar
-					backgroundColor={common_styles.dark_primary_color.backgroundColor}
-					barStyle="light-content"
-				/>
-				<Left>
-					<Button style={common_styles.primary_color} onPress={actions._back_to_index.bind(this)}>
-						<Icon name='arrow-back' />
-					</Button>
-				</Left>
-				<Body>
-					<Text style={common_styles.text}>{stringConst.ADD}</Text>
-				</Body>
-				<Right>
-					<Button style={common_styles.primary_color} onPress={actions._add_task.bind(this)}>
-						<Icon name='add' />
-					</Button>
-				</Right>
-			</Header>
-		);
 	}
 
 	_render_content()
@@ -100,25 +82,26 @@ export default class Add extends Component
 		return (
 			<Content style={common_styles.content}>
 				<View style={styles.main}>
-
 					<View style={styles.content}>
 						<Label style={styles.label}>{stringConst.NAME}</Label>
 						<InputGroup style={styles.input}>
 							<Input
-								style={styles.inputText}
+                                style={styles.inputText}
 								onChangeText={actions._update_input.bind(this, 'name')}
 								value={this.state.form.name}
-								autoFocus={true}
 							/>
-							<TouchableOpacity
-                                style={styles.voice_icon_container}
-                                onPress={this._voice.bind(this, 'name')}
-                            >
-								<Icon
-									name='mic'
-									style={styles.voice_icon}
-								/>
-							</TouchableOpacity>
+                            {
+                                this.item.status != stringConst.DONE &&
+                                    <TouchableOpacity
+                                        style={styles.voice_icon_container}
+                                        onPress={this._voice.bind(this, 'name')}
+                                    >
+            							<Icon
+            								name='mic'
+            								style={styles.voice_icon}
+                                        />
+                                    </TouchableOpacity>
+                            }
 						</InputGroup>
 					</View>
 
@@ -126,20 +109,22 @@ export default class Add extends Component
 						<Label style={styles.label}>{stringConst.PROJECT}</Label>
 						<InputGroup style={styles.input}>
 							<Input
-								style={styles.inputText}
 								ref='pro'
+                                style={styles.inputText}
 								onChangeText={actions._update_input.bind(this, 'project')}
 								value={this.state.form.project}
 							/>
-							<TouchableOpacity
-                                style={styles.voice_icon_container}
-                                onPress={this._voice.bind(this, 'project')}
-                            >
-								<Icon
-									name='mic'
-									style={styles.voice_icon}
-								/>
-							</TouchableOpacity>
+                            {
+                                this.item.status != stringConst.DONE &&
+                                    <TouchableOpacity
+                                        style={styles.voice_icon_container}
+                                        onPress={this._voice.bind(this, 'project')}
+                                    >
+            							<Icon
+            								name='mic'
+            								style={styles.voice_icon} />
+                                    </TouchableOpacity>
+                            }
 						</InputGroup>
 					</View>
 
@@ -147,8 +132,8 @@ export default class Add extends Component
 						<Label style={styles.label}>{stringConst.PRIORITY}</Label>
 						<Picker
 							style={styles.picker}
-							selectedValue={this.state.form.priority}
-  						onValueChange={actions._update_input.bind(this, 'priority')}
+							selectedValue={this.state.form.priority.toString()}
+  						    onValueChange={actions._update_input.bind(this, 'priority')}
 							mode="dropdown">
 							<Picker.Item label={stringConst.PRIORITY_LOW_LABEL} value={stringConst.PRIORITY_LOW} />
 							<Picker.Item label={stringConst.PRIORITY_NORMAL_LABEL} value={stringConst.PRIORITY_NORMAL} />
@@ -159,14 +144,37 @@ export default class Add extends Component
 					<View style={styles.deadline}>
 						<Label style={styles.label}>Deadline</Label>
 						<TouchableOpacity style={styles.date_picker} onPress={actions._show_picker.bind(this)}>
-           		<Text>{this.state.form.deadline}</Text>
+           		           <Text>{this.state.form.deadline}</Text>
 						</TouchableOpacity>
 					</View>
-				</View>
+
+                    <View style={styles.button}>
+                        <Button
+                          onPress={() => {
+                            this.props.parent.dismiss();
+                          }}
+                          style={{ backgroundColor: '#FE9700', marginRight: 10 }}>
+                          <Text>{stringConst.CLOSE}</Text>
+                        </Button>
+                        {   
+                            this.item.status != stringConst.DONE &&
+                                <Button
+                                    onPress={actions._add_task.bind(this)}
+                                    style={{ backgroundColor: '#FE9700' }}>
+                                  <Text>{stringConst.UPDATE}</Text>
+                                </Button>
+                        }
+        			</View>
+    			</View>
 			</Content>
 		);
 	}
-  	_voice = async (input, value) => {
+
+  loadDetail(id) {
+    actions.getTask.bind(this)(id);
+  }
+
+  _voice = async (input, value) => {
   		 try {
 	        //More Locales will be available upon release.
 	        var spokenText = await SpeechAndroid.startSpeech("Please speaking", SpeechAndroid.VIETNAMESE);

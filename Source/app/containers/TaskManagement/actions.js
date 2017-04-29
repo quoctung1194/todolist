@@ -105,7 +105,7 @@ const _drop_process_comming_task = function (attributes, region)
                   + currentdate.getSeconds();
 
   this._db.executeSql (
-    'UPDATE Tasks SET status = ?, created_date = ? WHERE id = ?',
+    'UPDATE Tasks SET status = ?, started_date = ? WHERE id = ?',
     [stringConst.CURRENT, datetime, attributes.id],
     _load_tasks.bind(this),
   );
@@ -135,8 +135,8 @@ const _drop_process_current_task = function (attributes, region)
     this.state.comming_tasks.push(attributes);
 
     this._db.executeSql (
-      'UPDATE Tasks SET status = ? WHERE id = ?',
-      [stringConst.COMMING, attributes.id],
+      'UPDATE Tasks SET status = ?, started_date = ? WHERE id = ?',
+      [stringConst.COMMING, null, attributes.id],
       _load_tasks.bind(this)
     );
   }
@@ -172,9 +172,9 @@ export const _add_redirect = function ()
 }
 
 //Hàm dùng để chuyển sang trang TaskList
-export const _task_list_redirect = function ()
+export const _task_list_redirect = function (task_type)
 {
-  Actions.task_list({index: this});
+  Actions.task_list({index: this, task_type: task_type});
 }
 
 //Hàm tạo database
@@ -198,6 +198,13 @@ export const _init_database = function ()
   	       'started_date	TEXT,' +
   	       'completed_date	TEXT' +
         ');');
+
+      // Hàm insert vào database
+      let insertData = function (tx) {
+        tx.executeSql ('INSERT INTO Settings (name, number) VALUES ("'+ stringConst.COMMING +'", 10);');
+        tx.executeSql ('INSERT INTO Settings (name, number) VALUES ("'+ stringConst.CURRENT +'", 3);');
+        tx.executeSql ('INSERT INTO Settings (name, number) VALUES ("'+ stringConst.DONE +'", 3);');
+      };
       tx.executeSql (
         'CREATE TABLE Settings (' +
   	       'id	INTEGER PRIMARY KEY AUTOINCREMENT,' +
@@ -205,11 +212,9 @@ export const _init_database = function ()
            'number INTEGER,' +
   	       'created_date	TEXT,' +
   	       'updated_date	TEXT' +
-        ');');
-      tx.executeSql ('INSERT INTO Settings (name, number) VALUES ("'+ stringConst.COMMING +'", 10);');
-      tx.executeSql ('INSERT INTO Settings (name, number) VALUES ("'+ stringConst.CURRENT +'", 3);');
-      tx.executeSql ('INSERT INTO Settings (name, number) VALUES ("'+ stringConst.DONE +'", 3);');
+        ');', [], insertData.bind(tx));
     }
+
     this._db.transaction(transaction_func, error_handle);
   });
 }
@@ -247,12 +252,12 @@ export const _load_tasks = function ()
     current = results.rows.item(1).number;
     done = results.rows.item(2).number;
 
-    this._db.executeSql ('SELECT * FROM Tasks WHERE status = ? ORDER BY priority DESC, deadline DESC LIMIT ?',
+    this._db.executeSql ('SELECT * FROM Tasks WHERE status = ? ORDER BY priority ASC, deadline DESC LIMIT ?',
       [stringConst.COMMING, comming],
       callback.bind(this, 'comming_tasks'),
       error_handle
     );
-    this._db.executeSql ('SELECT * FROM Tasks WHERE status = ? ORDER BY created_date DESC LIMIT ?',
+    this._db.executeSql ('SELECT * FROM Tasks WHERE status = ? ORDER BY started_date DESC LIMIT ?',
       [stringConst.CURRENT, current],
       callback.bind(this, 'current_task'),
       error_handle

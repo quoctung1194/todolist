@@ -6,6 +6,15 @@ export default styles = {
   },
   text: {
   	flex: 1,
-  	fontSize: 50,
+  	fontSize: 25,
+    marginLeft: 10,
+  },
+  separator: {
+  	height: 1,
+    backgroundColor: '#8E8E8E',
+  },
+  noData: {
+    alignItems: 'center',
+    marginTop: 10,
   }
 };
