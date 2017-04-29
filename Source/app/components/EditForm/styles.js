@@ -30,6 +30,11 @@ export default styles = {
   voice_icon: {
     color: 'green'
   },
+  button: {
+    flexDirection: 'row',
+    marginTop: 30,
+    justifyContent: 'flex-end'
+  },
   inputText: {
     flex: 8,
   },

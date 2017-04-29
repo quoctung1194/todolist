@@ -4,7 +4,8 @@ import {
   Text,
   PanResponder,
   Animated,
-  Dimensions
+  Dimensions,
+  TouchableWithoutFeedback
 } from 'react-native';
 
 import styles, {NORMAL_SIZE, BIG_SIZE} from './styles';
@@ -54,11 +55,15 @@ export default class Task extends Component
       <View
         onLayout={this.props.onLayout}
         style={ [styles.draggableContainer, {top: this.props.initTop, left: this.props.initLeft} ]}>
-        <Animated.View
-            {...this.panResponder.panHandlers}
-            style={[this.state.pan.getLayout(), styles.circle, size]}>
-            <Text style={styles.text}>{this.props.name}</Text>
-        </Animated.View>
+          <Animated.View
+              {...this.panResponder.panHandlers}
+              style={[this.state.pan.getLayout(), styles.circle, size]}>
+                <Text style={styles.text}
+                  numberOfLines={2}
+                >
+                  {this.props.name}
+                </Text>
+          </Animated.View>
       </View>
     );
   }

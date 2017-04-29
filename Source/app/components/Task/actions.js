@@ -68,6 +68,10 @@ const _is_drop = function (gesture, result = {})
 //Event Release
 export const _onPanResponderRelease = function (e, gesture)
 {
+  if (gesture.dx == 0 && gesture.dy == 0) {
+    this.props.onPress();
+  }
+
   //Giá trị tham chiếu hàm _is_drop trả về
   let result = {
     region: ''
