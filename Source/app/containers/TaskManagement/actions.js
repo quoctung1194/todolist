@@ -3,9 +3,11 @@ import {NORMAL_SIZE} from '../../components/Task/styles';
 import { Dimensions } from 'react-native';
 import {Actions, ActionConst} from 'react-native-router-flux';
 import {
-  Animated
+  Animated,
+  AsyncStorage
 } from 'react-native';
 import SQLite from 'react-native-sqlite-storage';
+import Sync from '../../utilizes/Sync';
 
 //Lấy các tham số tọa độ và kích thước của các region
 export const _set_region_layouts = function (region, e)
@@ -103,11 +105,23 @@ const _drop_process_comming_task = function (attributes, region)
                   + currentdate.getHours() + ":"
                   + currentdate.getMinutes() + ":"
                   + currentdate.getSeconds();
+  let item = {
+      id: attributes.id,
+      name: attributes.name,
+      project: attributes.project,
+      priority: attributes.priority,
+      deadline: attributes.deadline,
+      started_date: datetime,
+      status: stringConst.CURRENT
+  }; 
 
   this._db.executeSql (
     'UPDATE Tasks SET status = ?, started_date = ? WHERE id = ?',
     [stringConst.CURRENT, datetime, attributes.id],
-    _load_tasks.bind(this),
+    () => {
+        Sync.sync(item);
+        _load_tasks();
+    }
   );
 }
 
@@ -134,10 +148,23 @@ const _drop_process_current_task = function (attributes, region)
     attributes.status = stringConst.COMMING;
     this.state.comming_tasks.push(attributes);
 
+    let item = {
+      id: attributes.id,
+      name: attributes.name,
+      project: attributes.project,
+      priority: attributes.priority,
+      deadline: attributes.deadline,
+      started_date: null,
+      status: stringConst.COMMING
+    };  
+
     this._db.executeSql (
       'UPDATE Tasks SET status = ?, started_date = ? WHERE id = ?',
       [stringConst.COMMING, null, attributes.id],
-      _load_tasks.bind(this)
+      () => {
+        Sync.sync(item)
+        _load_tasks();
+      }
     );
   }
   else if (region == stringConst.DONE)
@@ -156,11 +183,23 @@ const _drop_process_current_task = function (attributes, region)
                     + currentdate.getHours() + ":"
                     + currentdate.getMinutes() + ":"
                     + currentdate.getSeconds();
+    let item = {
+      id: attributes.id,
+      name: attributes.name,
+      project: attributes.project,
+      priority: attributes.priority,
+      deadline: attributes.deadline,
+      status: stringConst.DONE,
+      completed_date: datetime
+    };
 
     this._db.executeSql (
       'UPDATE Tasks SET status = ?, completed_date = ? WHERE id = ?',
       [stringConst.DONE, datetime, attributes.id],
-      _load_tasks.bind(this)
+      () => {
+        Sync.sync(item);
+        _load_tasks();
+      }
     );
   }
 }
@@ -181,6 +220,9 @@ export const _task_list_redirect = function (task_type)
 export const _init_database = function ()
 {
   this._db = SQLite.openDatabase('localDB.db');
+  // this._db.executeSql ('DELETE FROM Tasks');
+  // AsyncStorage.removeItem('sync_time');
+  // AsyncStorage.removeItem('content');
 
   //Tiến hành kiểm tra database được tao hay chưa
   this._db.executeSql ('SELECT * FROM Tasks', [], null, (db) => {
@@ -188,7 +230,7 @@ export const _init_database = function ()
     let transaction_func = (tx) => {
       tx.executeSql (
         'CREATE TABLE Tasks (' +
-  	       'id	INTEGER PRIMARY KEY AUTOINCREMENT,' +
+  	       'id	TEXT PRIMARY KEY,' +
   	       'name	TEXT,' +
            'project TEXT,' +
            'priority	INTEGER,' +
@@ -224,7 +266,7 @@ let load_count = 0;
 export const _load_tasks = function ()
 {
   load_count = 0;
-
+  
   //Loading comming tasks
   let callback = function (task_type ,results)
   {
@@ -268,7 +310,7 @@ export const _load_tasks = function ()
       error_handle
     );
 
-  }, error_handle);
+  });
 }
 
 //Hàm xuất message lỗi

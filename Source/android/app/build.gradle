@@ -87,14 +87,14 @@ android {
     buildToolsVersion '25.0.0'
 
     defaultConfig {
-        applicationId "com.blanksource"
+        applicationId "com.quoctung1194.todoList"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
-        ndk {
-            abiFilters "armeabi-v7a", "x86"
-        }
+//        ndk {
+//            abiFilters "armeabi-v7a", "x86"
+//        }
     }
     signingConfigs {
         release {

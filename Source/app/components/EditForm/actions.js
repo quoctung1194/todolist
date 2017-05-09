@@ -6,7 +6,7 @@ import {
 import { Toast } from 'native-base';
 import * as stringConst from '../../constants/string';
 import {Keyboard} from 'react-native';
-
+import Sync from '../../utilizes/Sync';
 
 //Quay trở lại trang index
 export const _back_to_index = function ()
@@ -55,7 +55,7 @@ export const _add = function ()
 {
   //Convert deadline to format YYYY-MM-DD
   let date_arr = this.state.form.deadline.split('-');
-  let converted_deadline = date_arr[2] + '-' + date_arr[1] + '-' + date_arr[0];
+  let converted_deadline = date_arr[0] + '-' + date_arr[1] + '-' + date_arr[2];
 
   let currentdate = new Date();
   let created_date = (currentdate.getFullYear()) + '-'
@@ -65,6 +65,15 @@ export const _add = function ()
 	let sql = 'UPDATE Tasks ' +
 						'SET name = ?, project = ?, priority = ?, deadline = ? ' +
 						'WHERE id = ? ';
+
+  let item = {
+    id: this.state.form.id,
+    name: this.state.form.name,
+    project: this.state.form.project,
+    priority: this.state.form.priority,
+    deadline: converted_deadline,
+    status: this.item.status
+  };
 
   let on_success = () => {
     Toast.show({
@@ -76,6 +85,9 @@ export const _add = function ()
 
     this.setState(this.state);
 		this.props.taskManagement.load_tasks();
+
+    // sync
+    Sync.sync(item);
   }
 
   let on_error = (error) => {
