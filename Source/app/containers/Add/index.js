@@ -34,7 +34,7 @@ import SQLite from 'react-native-sqlite-storage';
 export default class Add extends Component
 {
 	constructor(props)
-  {
+  	{
 		super(props);
 
 		//Init current date

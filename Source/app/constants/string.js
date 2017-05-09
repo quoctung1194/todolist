@@ -1,5 +1,7 @@
 export const TASK_MANAGEMENT = 'TASK MANAGEMENT';
 export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
+export const ACCOUNT = 'ACCOUNT';
 export const SETTING = 'SETTINGS';
 export const ABOUT = 'ABOUT';
 export const ADD = 'ADD';
@@ -21,6 +23,7 @@ export const PRIORITY_HIGH_LABEL = 'High';
 export const NAME = 'Tên';
 export const PROJECT = 'Dự Án';
 export const PRIORITY = 'Ưu tiên';
+export const EMAIL = 'Email';
 export const PICK_DEADLINE = 'Please pick a date';
 export const DONE_LABEL = 'Done';
 export const SUCCESSFUL = 'Successful';

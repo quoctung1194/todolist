@@ -23,6 +23,7 @@ import TaskManagement from '../TaskManagement';
 import Login from '../Login';
 import Setting from '../Setting';
 import common_styles from '../Index/styles';
+import Config from '../../utilizes/Setting';
 
 export default class Index extends Component
 {
@@ -44,6 +45,7 @@ export default class Index extends Component
 
     //Init public function
     this.hide_footer = this._hide_footer;
+    this.actions = actions;
   }
 
   componentWillMount ()
@@ -122,13 +124,24 @@ export default class Index extends Component
     return (
       <Footer>
         <FooterTab style={styles.primary_color}>
-          <Button
-						style={styles.primary_color}
-						key={stringConst.LOGIN + this.state.active[stringConst.LOGIN]}
-            active={this.state.active[stringConst.LOGIN]}
-            onPress={actions._set_current_component.bind(this, stringConst.LOGIN)}>
-            <Text style={styles.tab_text}>{stringConst.LOGIN}</Text>
-          </Button>
+          { Config.user == null ? (
+              <Button
+    						style={styles.primary_color}
+    						key={stringConst.LOGIN + this.state.active[stringConst.LOGIN]}
+                active={this.state.active[stringConst.LOGIN]}
+                parent={this}
+                onPress={actions._set_current_component.bind(this, stringConst.LOGIN)}>
+                <Text style={styles.tab_text}>{stringConst.LOGIN}</Text>
+              </Button>) : (
+              <Button
+                style={styles.primary_color}
+                key={stringConst.LOGIN + this.state.active[stringConst.LOGIN]}
+                active={this.state.active[stringConst.LOGIN]}
+                parent={this}>
+                <Text style={styles.tab_text}>{stringConst.ACCOUNT}</Text>
+              </Button>
+              )
+          }
           <Button
 						style={styles.primary_color}
             key={stringConst.SETTING + this.state.active[stringConst.SETTING]}

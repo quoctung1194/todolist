@@ -6,7 +6,7 @@ export default styles = {
   },
   text: {
   	flex: 1,
-  	fontSize: 25,
+  	fontSize: 18,
     marginLeft: 10,
   },
   separator: {

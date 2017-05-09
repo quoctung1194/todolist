@@ -17,9 +17,15 @@ import {
 import styles from './styles';
 import * as stringConst from '../../constants/string';
 import common_styles from '../Index/styles';
+import * as actions from './actions';
 
 export default class Login extends Component
 {
+	state = {
+		email: '',
+		password: ''
+	};
+
 	render()
 	{
 		return (
@@ -40,17 +46,20 @@ export default class Login extends Component
 				<View style={styles.main}>
 					<Form>
 						<Item floatingLabel>
-							<Label>{stringConst.USERNAME}</Label>
-							<Input />
+							<Label>{stringConst.EMAIL}</Label>
+							<Input onChangeText={actions.assignToState.bind(this, 'email')} />
 						</Item>
 
 						<Item floatingLabel>
 							<Label>{stringConst.PASSWORD}</Label>
-							<Input />
+							<Input secureTextEntry={true}
+								onChangeText={actions.assignToState.bind(this, 'password')} />
 						</Item>
 					</Form>
 
-					<Button block style={styles.button_login}>
+					<Button
+						onPress={actions.login.bind(this)}
+						block style={styles.button_login}>
 						<Text>{stringConst.LOGIN}</Text>
 					</Button>
 				</View>

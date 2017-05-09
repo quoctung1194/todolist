@@ -36,7 +36,7 @@ export default styles = {
     marginRight: 5
   },
   load_more_button: {
-    fontSize: 40,
+    fontSize: 50,
   },
   done_region_center: {
     flex: 1,

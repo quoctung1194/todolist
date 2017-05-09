@@ -6,7 +6,7 @@ import {
 import { Toast } from 'native-base';
 import * as stringConst from '../../constants/string';
 import {Keyboard} from 'react-native';
-
+import Sync from '../../utilizes/Sync';
 
 //Quay trở lại trang index
 export const _back_to_index = function ()
@@ -56,21 +56,31 @@ export const _add = function ()
   //Convert deadline to format YYYY-MM-DD
   let date_arr = this.state.form.deadline.split('-');
   let converted_deadline = date_arr[2] + '-' + date_arr[1] + '-' + date_arr[0];
-
+  
   let currentdate = new Date();
   let created_date = (currentdate.getFullYear()) + '-'
                      + ('0' + (currentdate.getMonth() + 1)).slice(-2) + '-'
                      + ('0' + (currentdate.getDate())).slice(-2);
+  let uid = Date.now();
 
-  let sql = 'INSERT INTO Tasks (name, project, priority, deadline, status, created_date)' +
+  let sql = 'INSERT INTO Tasks (id, name, project, priority, deadline, status, created_date)' +
             'VALUES ('
+             + '"' + uid + '"' + ','
              + '"' + this.state.form.name + '"' + ','
              + '"' + this.state.form.project + '",'
              + '"' + this.state.form.priority + '",'
              + '"' + converted_deadline + '",'
              + '"' + stringConst.COMMING + '",'
              + '"' + created_date + '")';
-
+  let item = {
+    id: uid,
+    name: this.state.form.name,
+    project: this.state.form.project,
+    priority: this.state.form.priority,
+    deadline: converted_deadline,
+    status: stringConst.COMMING
+  };
+  
   let on_success = () => {
     Toast.show({
       text: stringConst.SUCCESSFUL,
@@ -82,6 +92,9 @@ export const _add = function ()
     //Set into default form
     this.state.form = JSON.parse(JSON.stringify(this._default_form));;
     this.setState (this.state);
+    
+    // sync
+    Sync.sync(item);
   }
 
   let on_error = (error) => {
